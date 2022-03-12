@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="keywords" content="Text to speech">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background-color: rgb(13, 13, 20);
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .text-size {
+            font-size: 20px;
+        }
+
+        .margin-radius {
+            margin-bottom: 2%;
+            border-radius: 8px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            margin: 0 15%;
+        }
+
+        .less-width {
+            width: 70%;
+            align-self: center;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .label-pos {
+            color: white;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .float-right {
+            background-color: rgb(30, 29, 34);
+            border-radius: 4px;
+            align-self: center;
+            min-width: 14px;
+            text-align: center;
+            color: white;
+            display: inline;
+            float: right;
+            position: relative;
+            left: 50%;
+            bottom: 2vh;
+        }
+
+        .title-box {
+            color: rgb(78, 77, 77);
+            text-shadow: rgb(17, 17, 17) 0 0 16px;
+            margin: 5vh 0 10vh;
+        }
+
+        .textarea-cont {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 2% 0 0 2%;
+            font-size: 18px;
+        }
+
+        .speaker-select-label {
+            color: white;
+            margin-bottom: 1%;
+        }
+
+        .btn {
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        textarea {
+            background-color: rgb(17, 15, 22);
+            color: azure;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+    <title>Text To speech by Shafin</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="title-box center">
+            <h1>Text To speech</h1>
+        </div>
+        <form id="form">
+            <div class="form-group"><textarea class="textarea-cont margin-radius" id="text-input" cols="30" rows="5"
+                    placeholder="Type anything..."></textarea>
+                <div class="container less-width"><label for="rate"
+                        class="text-size center label-pos margin-radius">Rate</label>
+                    <div id="rate-value" class="float-right">1</div><input type="range"
+                        class="input-range margin-radius" id="rate" min="0" max="2" value="1" step="0.1"><label
+                        for="pitch" class="text-size center label-pos margin-radius">Pitch</label>
+                    <div class="float-right" id="pitch-value">1</div><input type="range"
+                        class="input-range margin-radius" id="pitch" min="0" max="2" value="1" step="0.1">
+                </div><label class="text-size speaker-select-label">Choose the speaker:</label><select
+                    style="background-color: rgb(17, 15, 22);color: aliceblue !important;padding: 1rem;font-family: 'Courier New', Courier, monospace;"
+                    id="voice-select" class="margin-radius"></select></div><button
+                style="background-color: rgb(17, 15, 22);color: aliceblue;padding: 2rem;font-family: 'Courier New', Courier, monospace;"
+                class="btn margin-radius">Speak</button>
+        </form>
+    </div>
+    <script>
+        const synth = window.speechSynthesis,
+            textForm = document.querySelector("#form"),
+            textInput = document.querySelector("#text-input"),
+            voiceSelect = document.querySelector("#voice-select"),
+            rate = document.querySelector("#rate"),
+            rateValue = document.querySelector("#rate-value"),
+            pitch = document.querySelector("#pitch"),
+            pitchValue = document.querySelector("#pitch-value");
+        let voices = [];
+        const getVoices = () => {
+            voices = synth.getVoices(), voices.forEach((e => {
+                const t = document.createElement("option");
+                t.textContent = e.name + "(" + e.lang + ")", t.setAttribute("data-lang", e.lang), t
+                    .setAttribute("data-name", e.name), voiceSelect.appendChild(t)
+            }))
+        };
+        getVoices(), void 0 !== synth.onvoiceschanged && (synth.onvoiceschanged = getVoices);
+        const speak = () => {
+            if (!synth.speaking && "" !== textInput.value) {
+                const e = new SpeechSynthesisUtterance(textInput.value);
+                e.onend = e => {}, e.onerror = e => {};
+                const t = voiceSelect.selectedOptions[0].getAttribute("data-name");
+                voices.forEach((n => {
+                    n.name === t && (e.voice = n)
+                })), e.rate = rate.value, e.pitch = pitch.value, synth.speak(e)
+            }
+        };
+        textForm.addEventListener("submit", (e => {
+            e.preventDefault(), speak(), textInput.blur()
+        })), rate.addEventListener("change", (e => rateValue.textContent = rate.value)), pitch.addEventListener(
+            "change", (e => pitchValue.textContent = pitch.value)), voiceSelect.addEventListener("change", (e => {
+            speak()
+        }));
+    </script>
+</body>
+
+</html>
